@@ -11,21 +11,25 @@ public class EnemyController : MonoBehaviour
     public float changeDirectionTime = 2f; //改变运动方向
     private float changeDirectionTimer; 
     public bool isVertical; //是否垂直移动
+    private bool isFixed; //是否被击中
     private Vector2 moveDirection; //移动方向
     private Animator anime;
-    Rigidbody2D Body;
+    Rigidbody2D rbody;
     // Start is called before the first frame update
     void Start()
     {
-        Body = GetComponent<Rigidbody2D>();
+        rbody = GetComponent<Rigidbody2D>();
         anime = GetComponent<Animator>();
         moveDirection = isVertical ? Vector2.up : Vector2.right;
         changeDirectionTimer = changeDirectionTime;
+        isFixed = false;
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (isFixed) return; //如果处于被击中修复状态 不执行其他动作
+
         changeDirectionTimer -= Time.deltaTime;
         if (changeDirectionTimer < 0)
         {
@@ -33,10 +37,10 @@ public class EnemyController : MonoBehaviour
             changeDirectionTimer = changeDirectionTime;
         }
 
-        Vector2 position = Body.position;
+        Vector2 position = rbody.position;
         position.x += moveDirection.x * speed * Time.deltaTime;
         position.y += moveDirection.y * speed * Time.deltaTime;
-        Body.MovePosition(position);
+        rbody.MovePosition(position);
         anime.SetFloat("moveX",moveDirection.x);
         anime.SetFloat("moveY",moveDirection.y);
     }
@@ -54,5 +58,15 @@ public class EnemyController : MonoBehaviour
             Debug.Log("kick your ass!");
             player.ChangeHP(-1);
         }
+    }
+
+    /// <summary>
+    /// 敌人被子弹击中
+    /// </summary>
+    public void Fixed()
+    {
+        isFixed = true;
+        rbody.simulated = false; //被击中后禁用物理效果
+        anime.SetTrigger("fixed"); //播放被修复动画
     }
 }

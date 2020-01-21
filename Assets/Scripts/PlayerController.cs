@@ -8,8 +8,6 @@ public class PlayerController : MonoBehaviour
 {
     public float speed = 5f;//初始移动速度
     private Vector2 lookDirection = new Vector2(1,0); //默认朝向右
-    
-
 
     private int maxHP = 5;
     private int currentHP;
@@ -20,6 +18,8 @@ public class PlayerController : MonoBehaviour
     private float invincibleTimer; //无敌计时器
     private bool isVincible;
 
+    public GameObject bulletPrefab; //子弹
+
     Rigidbody2D rubyBody;
     Animator anime;
 
@@ -29,6 +29,7 @@ public class PlayerController : MonoBehaviour
         rubyBody = GetComponent<Rigidbody2D>(); //获取人物刚体组件
         anime = GetComponent<Animator>();
         currentHP = 2;
+        UIManager.instance.UpdateHPbar(currentHP,maxHP);
         isVincible = false;
         invincibleTimer = 0;
     }
@@ -53,18 +54,26 @@ public class PlayerController : MonoBehaviour
         Vector2 moveVector = new Vector2(moveX,moveY);
         if (moveVector.x != 0 || moveVector.y != 0) //没有按键时不变
         {
-            lookDirection = moveVector;
+            lookDirection = moveVector; // 获取人物朝向
         }
         anime.SetFloat("Look X",lookDirection.x);
         anime.SetFloat("Look Y",lookDirection.y);
-
         anime.SetFloat("Speed",moveVector.magnitude);
-
 
         Vector2 newposition = rubyBody.position;
         newposition += moveVector * speed * Time.deltaTime;
         rubyBody.MovePosition(newposition); //使用该方法获取位置解决碰撞抖动问题
-        
+
+        if (Input.GetKeyDown(KeyCode.J)) //按J发射子弹
+        {
+            anime.SetTrigger("Launch"); //播放发射动作
+            GameObject bullet = Instantiate(bulletPrefab, (rubyBody.position + Vector2.up * 0.5f), Quaternion.identity); //??
+            BulletController bc = bullet.GetComponent<BulletController>();
+            if (bc != null)
+            {
+                bc.Move(lookDirection,300);
+            }
+        }
     }
 
     /// <summary>
@@ -79,12 +88,14 @@ public class PlayerController : MonoBehaviour
             else
             {
                 isVincible = true;
+                anime.SetTrigger("Hit");
                 invincibleTimer = invincibleTime;
             }
         }
 
         Debug.Log("Before change HP:" + currentHP + "/" + maxHP);
         currentHP = Mathf.Clamp(currentHP+addHP , 0 , maxHP); //约束生命值范围
+        UIManager.instance.UpdateHPbar(currentHP,maxHP); //更新血条UI
         Debug.Log("after change HP:" + currentHP + "/" + maxHP);
     }
 
