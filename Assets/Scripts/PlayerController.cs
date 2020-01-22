@@ -23,6 +23,10 @@ public class PlayerController : MonoBehaviour
     Rigidbody2D rubyBody;
     Animator anime;
 
+    //***玩家音效
+    public AudioClip hitClip;
+    public AudioClip launchClip;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -67,6 +71,7 @@ public class PlayerController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.J)) //按J发射子弹
         {
             anime.SetTrigger("Launch"); //播放发射动作
+            AudioManager.instance.AudioPlay(launchClip);
             GameObject bullet = Instantiate(bulletPrefab, (rubyBody.position + Vector2.up * 0.5f), Quaternion.identity); //??
             BulletController bc = bullet.GetComponent<BulletController>();
             if (bc != null)
@@ -85,18 +90,19 @@ public class PlayerController : MonoBehaviour
         if (addHP < 0) //玩家受到伤害后
         {
             if (isVincible == true) return; //处于无敌状态不改变生命值
-            else
+            else //受到伤害
             {
                 isVincible = true;
                 anime.SetTrigger("Hit");
+                AudioManager.instance.AudioPlay(hitClip);
                 invincibleTimer = invincibleTime;
             }
         }
 
-        Debug.Log("Before change HP:" + currentHP + "/" + maxHP);
+        //Debug.Log("Before change HP:" + currentHP + "/" + maxHP);
         currentHP = Mathf.Clamp(currentHP+addHP , 0 , maxHP); //约束生命值范围
         UIManager.instance.UpdateHPbar(currentHP,maxHP); //更新血条UI
-        Debug.Log("after change HP:" + currentHP + "/" + maxHP);
+        //Debug.Log("after change HP:" + currentHP + "/" + maxHP);
     }
 
     

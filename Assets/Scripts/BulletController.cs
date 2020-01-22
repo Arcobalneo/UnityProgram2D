@@ -8,6 +8,7 @@ public class BulletController : MonoBehaviour
 {
     Rigidbody2D rbody;
 
+    public AudioClip hitClip; //齿轮击中音效
     // Start is called before the first frame update
     void Awake() //使用start无法在刚生成时获取到刚体发生报错，使用awake替代
     {
@@ -41,6 +42,7 @@ public class BulletController : MonoBehaviour
             Debug.Log("击中乐");
             ec.Fixed();
         }
+        AudioManager.instance.AudioPlay(hitClip);
         Destroy(this.gameObject);
     }
 }

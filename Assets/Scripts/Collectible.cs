@@ -6,6 +6,8 @@ using UnityEngine;
 /// </summary>
 public class Collectible : MonoBehaviour
 {
+    public AudioClip collectClip; //拾取草莓音效
+
     // Start is called before the first frame update
     void Start()
     {
@@ -28,6 +30,7 @@ public class Collectible : MonoBehaviour
             if (pc.playerCurrentHP < pc.playerMaxHP)
             {
                 pc.ChangeHP(1);
+                AudioManager.instance.AudioPlay(collectClip);
                 Destroy(this.gameObject);
             }
             

@@ -12,7 +12,7 @@ public class UIManager : MonoBehaviour
     public Image HPbar; //角色血条
 
     // Start is called before the first frame update
-    void Start()
+    void Awake() //提前于playercontroller初始化单例以便被调用
     {
         instance = this;
     }

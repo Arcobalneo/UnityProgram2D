@@ -14,6 +14,7 @@ public class EnemyController : MonoBehaviour
     private bool isFixed; //是否被击中
     private Vector2 moveDirection; //移动方向
     private Animator anime;
+    public AudioClip fixedClip;
     Rigidbody2D rbody;
     // Start is called before the first frame update
     void Start()
@@ -68,5 +69,6 @@ public class EnemyController : MonoBehaviour
         isFixed = true;
         rbody.simulated = false; //被击中后禁用物理效果
         anime.SetTrigger("fixed"); //播放被修复动画
+        AudioManager.instance.AudioPlay(fixedClip);
     }
 }
