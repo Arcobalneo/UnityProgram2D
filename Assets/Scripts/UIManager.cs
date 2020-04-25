@@ -28,7 +28,7 @@ public class UIManager : MonoBehaviour
     /// </summary>
     /// <param name="curHP"></param>
     /// <param name="maxHP"></param>
-    public void UpdateHPbar(int curHP,int maxHP)
+    public void UpdateHPbar(float curHP,float maxHP)
     {
         HPbar.fillAmount = (float)curHP / (float)maxHP;
     }
